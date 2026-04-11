@@ -3,6 +3,9 @@ data/
 test/
 ckpts/
 figure/
+impact_frames/
+.venv/
+prediction_frames/
 __pycache__/
 utils/__pycache__/
 prediction/
