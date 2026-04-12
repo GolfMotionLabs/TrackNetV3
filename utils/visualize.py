@@ -1,6 +1,6 @@
 import os
-import cv2
-import parse
+import cv2 #type: ignore
+import parse #type: ignore
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
@@ -72,33 +72,33 @@ def write_to_tb(model_type, tb_writer, losses, val_res, epoch):
     tb_writer.flush()
 
 def plot_median_files(data_dir):
-    """ Plot median frames of each match and rally and save to '{data_dir}/median'. 
+    """ Plot median frames of each session and impact and save to '{data_dir}/median'. 
     
         Args:
             data_dir (str): Data root directory
     """
 
-    rally_dirs = []
+    impact_dirs = []
     if not os.path.exists(os.path.join(data_dir, 'median')):
         os.makedirs(os.path.join(data_dir, 'median'))
     
     for split in ['train', 'test', 'val']:
-        match_dirs = list_dirs(os.path.join(data_dir, split))
-        # For each match
-        for match_dir in match_dirs:
-            file_format_str = os.path.join('{}', 'match{}')
-            _, match_id = parse.parse(file_format_str, match_dir)
-            if os.path.exists(os.path.join(data_dir, split, f'match{match_id}', 'median.npz')):
-                median = np.load(os.path.join(data_dir, split, f'match{match_id}', 'median.npz'))['median'][..., ::-1] # BGR to RGB
-                cv2.imwrite(os.path.join(data_dir, 'median', f'{split}_m{match_id}.{IMG_FORMAT}'), median)
-            rally_dirs = list_dirs(os.path.join(match_dir, 'frame'))
-            # For each rally
-            for rally_dir in rally_dirs:
+        session_dirs = list_dirs(os.path.join(data_dir, split))
+        # For each session
+        for session_dir in session_dirs:
+            file_format_str = os.path.join('{}', 'session{}')
+            _, session_id = parse.parse(file_format_str, session_dir)
+            if os.path.exists(os.path.join(data_dir, split, f'session{session_id}', 'median.npz')):
+                median = np.load(os.path.join(data_dir, split, f'session{session_id}', 'median.npz'))['median'][..., ::-1] # BGR to RGB
+                cv2.imwrite(os.path.join(data_dir, 'median', f'{split}_s{session_id}.{IMG_FORMAT}'), median)
+            impact_dirs = list_dirs(os.path.join(session_dir, 'frame'))
+            # For each impact
+            for impact_dir in impact_dirs:
                 file_format_str = os.path.join('{}', 'frame', '{}')
-                _, rally_id = parse.parse(file_format_str, rally_dir)
-                if os.path.exists(os.path.join(rally_dir, 'median.npz')):
-                    median = np.load(os.path.join(rally_dir, 'median.npz'))['median'][..., ::-1] # BGR to RGB
-                    cv2.imwrite(os.path.join(data_dir, 'median', f'{split}_m{match_id}_r{rally_id}.{IMG_FORMAT}'), median)
+                _, impact_id = parse.parse(file_format_str, impact_dir)
+                if os.path.exists(os.path.join(impact_dir, 'median.npz')):
+                    median = np.load(os.path.join(impact_dir, 'median.npz'))['median'][..., ::-1] # BGR to RGB
+                    cv2.imwrite(os.path.join(data_dir, 'median', f'{split}_s{session_id}_i{impact_id}.{IMG_FORMAT}'), median)
 
 def plot_heatmap_pred_sample(x, y, y_pred, c, bg_mode, save_dir):
     """ Visualize input and output of TrackNet and save as a gif. Including 4 subplots:
@@ -195,21 +195,21 @@ def plot_diff_hist(pred_dict_base, pred_dict_refine, split, save_dir):
     pred_types_map = {i: pred_type for i, pred_type in enumerate(pred_types)}
 
     drop_frame_dict = json.load(open(os.path.join(data_dir, 'drop_frame.json')))
-    rally_keys = drop_frame_dict['map']
+    impact_keys = drop_frame_dict['map']
     start_frame, end_frame = drop_frame_dict['start'], drop_frame_dict['end']
 
     for err_type in ['FP1', 'FP2']:
         refine_diff, baseline_diff = [], []
-        for rally_key in rally_keys:
-            pred_base = pred_dict_base[rally_key]
-            pred_refine = pred_dict_refine[rally_key]
-            match_id, rally_id = rally_key.split('_')[0], '_'.join(rally_key.split('_')[1:])
-            start_f, end_f = start_frame[rally_key], end_frame[rally_key]
-            w, h = Image.open(os.path.join(data_dir, split, f'match{match_id}', 'frame', rally_id, f'0.{IMG_FORMAT}')).size
+        for impact_key in impact_keys:
+            pred_base = pred_dict_base[impact_key]
+            pred_refine = pred_dict_refine[impact_key]
+            session_id, impact_id = impact_key.split('_')[0], '_'.join(impact_key.split('_')[1:])
+            start_f, end_f = start_frame[impact_key], end_frame[impact_key]
+            w, h = Image.open(os.path.join(data_dir, split, f'session{session_id}', 'frame', impact_id, f'0.{IMG_FORMAT}')).size
             w_scaler, h_scaler = w/WIDTH, h/HEIGHT
 
             # Load ground truth
-            csv_file = os.path.join(data_dir, split, f'match{match_id}', 'corrected_csv' if split == 'test' else 'csv', f'{rally_id}_ball.csv')
+            csv_file = os.path.join(data_dir, split, f'session{session_id}', 'corrected_csv' if split == 'test' else 'csv', f'{impact_id}_ball.csv')
             label_df = pd.read_csv(csv_file, encoding='utf8')
             x, y, vis = np.array(label_df['X']), np.array(label_df['Y']),np.array(label_df['Visibility'])
 
