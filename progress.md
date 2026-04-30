@@ -26,6 +26,16 @@
 - Smoke-tested dataset loader end-to-end: Shuttlecock_Trajectory_Dataset instantiates and
   returns correctly shaped tensors from converted golf data
 
+### Session 4 — 2026-04-30
+- Created tools/build_golf_backgrounds.py
+  - Three modes: shot (default), session (cross-shot), manual (user image)
+  - Default shot mode: per-pixel median of all frames within each shot
+  - Outputs data/{split}/{shot_name}/median.npz at the primary lookup path,
+    overriding the placeholder written by the conversion script
+  - --save_preview writes a .png alongside each npz for visual inspection
+  - Session mode available for later calibration-phase replacement
+- Ran shot-mode background build on all 12 converted shots; previews saved
+
 ---
 
 ## Change Log
@@ -38,6 +48,7 @@
 | 3 | Golf-specific output layout (no match/ball naming) | tools/convert_golf_dataset.py |
 | 3 | Generic rally dir discovery, drop match{N} sort | utils/general.py |
 | 3 | Golf-compatible split parsing and CSV path | dataset.py |
+| 4 | Background builder with shot/session/manual modes | tools/build_golf_backgrounds.py |
 
 ## Blockers
 _None._

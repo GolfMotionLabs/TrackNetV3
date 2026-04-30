@@ -44,8 +44,9 @@ Adapt TrackNetV3 into a golf-ball tracking pipeline for 240 fps impact-centered 
   - Converts impact_frames/{shot_name}/ folders + CVAT image-task XML into golf dataset layout.
   - Output: data/{split}/{shot_name}/frame/{shot_name}/ and csv/{shot_name}.csv (no match/ball naming).
 
-- [ ] `tools/build_golf_backgrounds.py`
-  - Build clean background images from empty frames, pre-impact medians, or custom source frames.
+- [x] `tools/build_golf_backgrounds.py`
+  - Builds median.npz backgrounds per shot (default) or cross-shot, or from a manual image.
+  - Default: per-shot median of all frames. Session mode ready for future calibration phase.
 
 - [ ] `tools/build_roi_clips.py`
   - Crop launch-zone ROI from source clips and remap labels into ROI coordinates.
@@ -106,7 +107,7 @@ Adapt TrackNetV3 into a golf-ball tracking pipeline for 240 fps impact-centered 
 ### Phase 2 — Preprocessing and input construction
 - [ ] Implement ROI crop generation for all frames
 - [ ] Remap labels from full-frame coordinates to ROI coordinates
-- [ ] Build background images for ROI clips
+- [x] Build background images for shots (per-shot median, all frames)
 - [ ] Validate ROI/background pairs visually
 
 ### Phase 3 — Heatmap target adaptation
@@ -195,8 +196,8 @@ Adapt TrackNetV3 into a golf-ball tracking pipeline for 240 fps impact-centered 
 - [x] Create pilot annotation set in CVAT
 - [x] Write dataset conversion script
 - [x] Verify dataset loader reads converted golf data end-to-end
+- [x] Implement golf background builder
 - [ ] Implement ROI crop pipeline
-- [ ] Implement golf background builder
 - [ ] Add configurable heatmap target generation
 - [ ] Add heatmap export/debug utility
 - [ ] Run first TrackNet-only training experiment
