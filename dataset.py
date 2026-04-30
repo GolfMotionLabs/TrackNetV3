@@ -153,9 +153,8 @@ class Shuttlecock_Trajectory_Dataset(Dataset):
 
     def _get_split(self, rally_dir):
         """ Parse the split from the rally directory. """
-        file_format_str = os.path.join(self.root_dir, '{}', 'match{}')
-        split, _ = parse.parse(file_format_str, rally_dir)
-        return split
+        rel = os.path.relpath(rally_dir, self.root_dir)
+        return rel.split(os.sep)[0]
     
     def _gen_rally_img_congif_file(self, file_name):
         """ Generate rally image configuration file. """
@@ -221,9 +220,9 @@ class Shuttlecock_Trajectory_Dataset(Dataset):
         if self.data_mode == 'heatmap':
             # Read label csv file
             if 'test' in rally_dir:
-                csv_file = os.path.join(match_dir, 'corrected_csv', f'{rally_id}_ball.csv')
+                csv_file = os.path.join(match_dir, 'corrected_csv', f'{rally_id}.csv')
             else:
-                csv_file = os.path.join(match_dir, 'csv', f'{rally_id}_ball.csv')
+                csv_file = os.path.join(match_dir, 'csv', f'{rally_id}.csv')
             
             assert os.path.exists(csv_file), f'{csv_file} does not exist.'
             label_df = pd.read_csv(csv_file, encoding='utf8').sort_values(by='Frame').fillna(0)
@@ -270,7 +269,7 @@ class Shuttlecock_Trajectory_Dataset(Dataset):
             return dict(id=id, frame_file=frame_file, coor=coor, vis=vis)
         else:
             # Read predicted csv file
-            pred_csv_file = os.path.join(match_dir, 'predicted_csv', f'{rally_id}_ball.csv')
+            pred_csv_file = os.path.join(match_dir, 'predicted_csv', f'{rally_id}.csv')
             assert os.path.exists(pred_csv_file), f'{pred_csv_file} does not exist.'
             pred_df = pd.read_csv(pred_csv_file, encoding='utf8').sort_values(by='Frame').fillna(0)
 
