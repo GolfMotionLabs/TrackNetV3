@@ -48,8 +48,9 @@ Adapt TrackNetV3 into a golf-ball tracking pipeline for 240 fps impact-centered 
   - Builds median.npz backgrounds per shot (default) or cross-shot, or from a manual image.
   - Default: per-shot median of all frames. Session mode ready for future calibration phase.
 
-- [ ] `tools/build_roi_clips.py`
-  - Crop launch-zone ROI from source clips and remap labels into ROI coordinates.
+- [x] `tools/build_roi_clips.py`
+  - Crops frames, CSVs, and median.npz to fixed ROI; remaps coordinates; marks out-of-bounds as invisible.
+  - Default ROI: x=[196,996), y=[24,1499), 800x1475px (portrait). Output to data_roi/.
 
 - [ ] `tools/inspect_heatmaps.py`
   - Visualize predicted heatmaps, target heatmaps, decoded peaks, and overlays for debugging.
@@ -87,6 +88,7 @@ Adapt TrackNetV3 into a golf-ball tracking pipeline for 240 fps impact-centered 
 
 - [~] `utils/general.py`
   - [x] get_rally_dirs() updated to work with golf flat structure (no match{N} dependency).
+  - [x] WIDTH=416, HEIGHT=768 set for golf portrait ROI (0.1% aspect error, both ÷32).
   - [ ] Add helper functions for ROI coordinate transforms, background loading, heatmap decoding, and visualization.
 
 - [ ] `README.md`
@@ -105,8 +107,8 @@ Adapt TrackNetV3 into a golf-ball tracking pipeline for 240 fps impact-centered 
 - [X] Verify loader can read converted data end to end
 
 ### Phase 2 — Preprocessing and input construction
-- [ ] Implement ROI crop generation for all frames
-- [ ] Remap labels from full-frame coordinates to ROI coordinates
+- [x] Implement ROI crop generation for all frames
+- [x] Remap labels from full-frame coordinates to ROI coordinates
 - [x] Build background images for shots (per-shot median, all frames)
 - [ ] Validate ROI/background pairs visually
 
@@ -197,7 +199,7 @@ Adapt TrackNetV3 into a golf-ball tracking pipeline for 240 fps impact-centered 
 - [x] Write dataset conversion script
 - [x] Verify dataset loader reads converted golf data end-to-end
 - [x] Implement golf background builder
-- [ ] Implement ROI crop pipeline
+- [x] Implement ROI crop pipeline
 - [ ] Add configurable heatmap target generation
 - [ ] Add heatmap export/debug utility
 - [ ] Run first TrackNet-only training experiment

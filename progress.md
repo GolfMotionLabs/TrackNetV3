@@ -26,6 +26,22 @@
 - Smoke-tested dataset loader end-to-end: Shuttlecock_Trajectory_Dataset instantiates and
   returns correctly shaped tensors from converted golf data
 
+### Session 6 — 2026-04-30
+- Set WIDTH=416, HEIGHT=768 in utils/general.py
+  - ROI aspect ratio 0.5424 vs 416/768=0.5417, only 0.1% distortion
+  - Both divisible by 32 (required by U-Net downsampling)
+  - 320K pixels vs original 148K — preserves more ball detail after resize
+
+### Session 5 — 2026-04-30
+- Created tools/build_roi_clips.py
+  - Fixed ROI: x=[196,996), y=[24,1499), 800x1475px portrait
+  - Crops frames, backgrounds (median.npz), and CSVs; labels outside ROI → Visibility=0
+  - Verified: IMG_1660 frame 0 (ball at y=1552, below ROI bottom y=1499) correctly silenced
+  - Output to data_roi/ (data/ originals preserved)
+- Identified WIDTH=288, HEIGHT=512 as the portrait resolution to set before training
+  (aspect ratio 0.5625 vs ROI 0.542, <4% distortion, both divisible by 32)
+- Ran pipeline: 26 shots cropped, 0 skipped
+
 ### Session 4 — 2026-04-30
 - Created tools/build_golf_backgrounds.py
   - Three modes: shot (default), session (cross-shot), manual (user image)
@@ -49,6 +65,8 @@
 | 3 | Generic rally dir discovery, drop match{N} sort | utils/general.py |
 | 3 | Golf-compatible split parsing and CSV path | dataset.py |
 | 4 | Background builder with shot/session/manual modes | tools/build_golf_backgrounds.py |
+| 5 | ROI crop pipeline (frames, labels, backgrounds) | tools/build_roi_clips.py |
+| 6 | Set network resolution WIDTH=416, HEIGHT=768 | utils/general.py |
 
 ## Blockers
 _None._

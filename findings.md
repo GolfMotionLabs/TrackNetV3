@@ -3,7 +3,7 @@
 ## Deliverables
 
 - [x] Golf dataset conversion pipeline — converts CVAT image-task XML + frame folders into loader-compatible layout
-- [ ] ROI crop preprocessing for frames and labels
+- [x] ROI crop preprocessing for frames and labels — 800x1475px at (196,24), output to data_roi/
 - [x] Golf background generation module — per-shot median (default), cross-shot session, or manual image
 - [ ] Heatmap target generator with configurable target shape
 - [ ] Training script/config for golf TrackNet
@@ -28,7 +28,7 @@
 ## Open Questions
 
 - [ ] Should the first training target be circular Gaussian, larger circular Gaussian, or elliptical Gaussian for streaked frames?
-- [ ] Will ROI be fixed per camera setup, or derived per clip from a known ball/tee position?
+- [x] ROI fixed or per-clip? → Fixed per session. ROI: x=[196,996), y=[24,1499), 800x1475px portrait, measured from Paint bottom-left selection corner (196,1499).
 - [ ] What background source is best: empty scene frame, pre-impact median, or custom provided background?
 - [ ] Should the first inference fusion method use original Gaussian overlap weighting or confidence-weighted fusion?
 - [ ] Is TrackNet input length best kept at 8 frames, or should 5 and 7 frame variants be supported from the start?
@@ -64,13 +64,14 @@ data/{split}/{shot_name}/csv/{shot_name}.csv
 | 2026-04-29 | Use CVAT for annotation | Free, video-friendly, and well suited for short tracked sequences with framewise center labels. |
 | 2026-04-29 | Add heatmap visualization/debug export early | The first milestone is to verify that the ball is detectable at all, frame by frame. |
 | 2026-04-30 | Remove match/ball naming from dataset layout | Golf has no concept of matches or rallies; naming should reflect shots only. |
+| 2026-04-30 | Network resolution: WIDTH=416, HEIGHT=768 (portrait) | ROI is 800x1475 (ratio 0.5424); 416/768=0.5417 is 0.1% off, both divisible by 32. Higher than original 512x288 (320K vs 148K pixels) — preserves more ball detail. |
 | 2026-04-30 | Background: per-shot median of all frames in the shot | Chosen over cross-shot session median for now. ~20 frames per shot with fast-moving ball gives reasonable suppression. Session mode (cross-shot) and manual mode available for future calibration phase. |
 | 2026-04-30 | Include unannotated shots as all-Visibility=0 sequences | Valid TN training examples; model needs to learn background-only sequences too. |
 
 ## Open Questions
 
 - [ ] Should the first training target be circular Gaussian, larger circular Gaussian, or elliptical Gaussian for streaked frames?
-- [ ] Will ROI be fixed per camera setup, or derived per clip from a known ball/tee position?
+- [x] ROI fixed or per-clip? → Fixed per session. ROI: x=[196,996), y=[24,1499), 800x1475px portrait, measured from Paint bottom-left selection corner (196,1499).
 - [x] What background source is best? → Per-shot median for now; calibration-phase empty scene deferred.
 - [ ] Should the first inference fusion method use original Gaussian overlap weighting or confidence-weighted fusion?
 - [ ] Is TrackNet input length best kept at 8 frames, or should 5 and 7 frame variants be supported from the start?
